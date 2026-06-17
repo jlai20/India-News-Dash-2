@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>The Overnight Tape — India Macro &amp; F&amp;O</title>
+<meta name="description" content="Overnight India market and macro news since the last NSE close, with F&O stock tagging." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg:#0c1118; --panel:#131a24; --panel-2:#1a2330; --hover:#202b3a;
+    --border:#243042; --border-soft:#1b2530;
+    --text:#e6ebf2; --muted:#8a97a8; --faint:#5d6b7d;
+    --macro:#5fb3d4; --macro-bg:rgba(95,179,212,.12);
+    --fno:#e0a45e; --fno-bg:rgba(224,164,94,.13);
+    --other:#7e8aa0; --other-bg:rgba(126,138,160,.12);
+    --up:#4caf82; --down:#e06c75;
+    --display:"Space Grotesk",system-ui,sans-serif;
+    --body:"Inter",system-ui,sans-serif;
+    --mono:"IBM Plex Mono",ui-monospace,monospace;
+    --maxw:1180px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    background:
+      radial-gradient(1100px 480px at 80% -8%, rgba(95,179,212,.07), transparent 60%),
+      radial-gradient(900px 400px at -5% 0%, rgba(224,164,94,.06), transparent 55%),
+      var(--bg);
+    color:var(--text); font-family:var(--body); line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:inherit}
+  .wrap{max-width:var(--maxw); margin:0 auto; padding:0 20px}
+
+  /* ---------- Masthead ---------- */
+  header.mast{border-bottom:1px solid var(--border); position:sticky; top:0; z-index:20;
+    backdrop-filter:blur(8px); background:rgba(12,17,24,.82)}
+  .mast-row{display:flex; align-items:center; justify-content:space-between; gap:16px;
+    padding:14px 0; flex-wrap:wrap}
+  .brand{display:flex; align-items:baseline; gap:12px; min-width:0}
+  .brand .mark{font-family:var(--display); font-weight:700; letter-spacing:.04em;
+    font-size:19px; text-transform:uppercase}
+  .brand .mark b{color:var(--fno)}
+  .brand .sub{font-size:12px; color:var(--muted); white-space:nowrap}
+  .clockbox{display:flex; align-items:center; gap:18px; font-family:var(--mono)}
+  .clock{font-size:20px; font-weight:600; letter-spacing:.02em}
+  .clock small{font-size:11px; color:var(--faint); margin-left:4px}
+  .mstat{display:flex; flex-direction:column; align-items:flex-end; gap:2px; font-size:11px}
+  .mstat .dot{display:inline-block; width:7px; height:7px; border-radius:50%; margin-right:6px;
+    vertical-align:middle}
+  .mstat .closed{color:var(--muted)} .mstat .open{color:var(--up)}
+  .dot.closed{background:var(--down)} .dot.open{background:var(--up); box-shadow:0 0 8px var(--up)}
+  .mstat .count{color:var(--faint)}
+
+  /* ---------- Coverage band (the signature timeline) ---------- */
+  .band{border-bottom:1px solid var(--border-soft); padding:16px 0}
+  .band-top{display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap}
+  .band-label{font-family:var(--display); font-weight:600; font-size:14px; letter-spacing:.01em}
+  .band-label span{color:var(--fno)}
+  .updated{font-family:var(--mono); font-size:11px; color:var(--faint)}
+  .seedflag{color:var(--fno); border:1px solid var(--fno); border-radius:4px;
+    padding:1px 6px; font-size:10px; margin-left:8px; text-transform:uppercase; letter-spacing:.05em}
+  .timeline{margin-top:12px}
+  .tl-track{position:relative; height:6px; background:var(--panel-2); border-radius:6px; overflow:visible}
+  .tl-fill{position:absolute; left:0; top:0; bottom:0; border-radius:6px;
+    background:linear-gradient(90deg,var(--fno),var(--macro))}
+  .tl-now{position:absolute; top:-4px; width:2px; height:14px; background:var(--text);
+    box-shadow:0 0 6px rgba(230,235,242,.6)}
+  .tl-labels{display:flex; justify-content:space-between; margin-top:7px;
+    font-family:var(--mono); font-size:10.5px; color:var(--faint)}
+  .tl-labels b{color:var(--muted); font-weight:500}
+
+  /* ---------- Controls ---------- */
+  .controls{display:flex; align-items:center; gap:10px; padding:14px 0; flex-wrap:wrap;
+    border-bottom:1px solid var(--border-soft)}
+  .seg{display:inline-flex; background:var(--panel); border:1px solid var(--border); border-radius:8px;
+    overflow:hidden}
+  .seg button{appearance:none; background:transparent; border:0; color:var(--muted);
+    font-family:var(--body); font-size:13px; font-weight:500; padding:8px 14px; cursor:pointer;
+    display:flex; align-items:center; gap:7px}
+  .seg button .n{font-family:var(--mono); font-size:11px; color:var(--faint)}
+  .seg button:hover{color:var(--text); background:var(--hover)}
+  .seg button.on{color:var(--bg); font-weight:600}
+  .seg button.on.all{background:var(--text)}
+  .seg button.on.macro{background:var(--macro)} .seg button.on.macro .n{color:rgba(12,17,24,.6)}
+  .seg button.on.fno{background:var(--fno)} .seg button.on.fno .n{color:rgba(12,17,24,.6)}
+  .seg button.on .n{color:rgba(12,17,24,.55)}
+  .search{flex:1; min-width:170px; display:flex; align-items:center; gap:8px;
+    background:var(--panel); border:1px solid var(--border); border-radius:8px; padding:8px 12px}
+  .search input{flex:1; background:transparent; border:0; outline:0; color:var(--text);
+    font-family:var(--body); font-size:13px}
+  .search svg{flex:none; color:var(--faint)}
+  .winToggle{display:flex; align-items:center; gap:7px; font-size:12px; color:var(--muted);
+    cursor:pointer; user-select:none; font-family:var(--mono)}
+  .winToggle input{accent-color:var(--macro)}
+
+  /* ---------- Layout ---------- */
+  .grid{display:grid; grid-template-columns:264px 1fr; gap:26px; padding:22px 0 60px}
+  @media(max-width:860px){ .grid{grid-template-columns:1fr; gap:18px} }
+
+  .rail{display:flex; flex-direction:column; gap:16px; align-self:start; position:sticky; top:128px}
+  @media(max-width:860px){ .rail{position:static} }
+  .card{background:var(--panel); border:1px solid var(--border); border-radius:12px; padding:14px 15px}
+  .card h3{margin:0 0 11px; font-family:var(--display); font-size:12px; font-weight:600;
+    letter-spacing:.07em; text-transform:uppercase; color:var(--muted)}
+
+  .stocklist{display:flex; flex-direction:column; gap:3px}
+  .stockrow{display:flex; align-items:center; justify-content:space-between; gap:8px;
+    padding:6px 8px; border-radius:7px; cursor:pointer; border:1px solid transparent}
+  .stockrow:hover{background:var(--hover)}
+  .stockrow.active{border-color:var(--fno); background:var(--fno-bg)}
+  .stockrow .tk{font-family:var(--mono); font-size:12.5px; font-weight:500}
+  .stockrow .nm{font-size:11px; color:var(--faint); margin-left:6px; overflow:hidden;
+    text-overflow:ellipsis; white-space:nowrap}
+  .stockrow .ct{font-family:var(--mono); font-size:11px; color:var(--fno);
+    background:var(--fno-bg); border-radius:20px; padding:1px 8px; flex:none}
+  .left{display:flex; align-items:baseline; min-width:0}
+
+  .srcgrid{display:flex; flex-direction:column; gap:6px}
+  .srcrow{display:flex; align-items:center; gap:8px; font-size:11.5px; color:var(--muted)}
+  .srcrow .sd{width:7px; height:7px; border-radius:50%; flex:none}
+  .srcrow .sd.ok{background:var(--up)} .srcrow .sd.bad{background:var(--down)}
+  .srcrow .sc{margin-left:auto; font-family:var(--mono); font-size:10.5px; color:var(--faint)}
+
+  /* ---------- Feed ---------- */
+  .feed{display:flex; flex-direction:column; gap:12px}
+  .item{background:var(--panel); border:1px solid var(--border); border-radius:12px;
+    padding:15px 17px; transition:border-color .15s, transform .15s}
+  .item:hover{border-color:#33445c}
+  .item .meta{display:flex; align-items:center; gap:9px; flex-wrap:wrap; margin-bottom:7px}
+  .item .time{font-family:var(--mono); font-size:11.5px; color:var(--text)}
+  .item .ago{font-family:var(--mono); font-size:11px; color:var(--faint)}
+  .item .srcs{font-size:11px; color:var(--muted); display:flex; gap:6px; flex-wrap:wrap}
+  .item .srcs span{background:var(--panel-2); border-radius:5px; padding:1px 7px}
+  .item h2{margin:0 0 6px; font-family:var(--display); font-weight:600; font-size:16.5px;
+    line-height:1.32; letter-spacing:.005em}
+  .item h2 a{text-decoration:none}
+  .item h2 a:hover{text-decoration:underline; text-decoration-color:var(--faint)}
+  .item p{margin:0 0 11px; color:var(--muted); font-size:13px; line-height:1.5;
+    display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden}
+  .tags{display:flex; align-items:center; gap:7px; flex-wrap:wrap}
+  .tag{font-family:var(--mono); font-size:10.5px; letter-spacing:.05em; text-transform:uppercase;
+    padding:3px 9px; border-radius:20px; font-weight:500}
+  .tag.macro{color:var(--macro); background:var(--macro-bg); border:1px solid rgba(95,179,212,.3)}
+  .tag.fno{color:var(--fno); background:var(--fno-bg); border:1px solid rgba(224,164,94,.3)}
+  .tag.markets{color:var(--other); background:var(--other-bg); border:1px solid rgba(126,138,160,.25)}
+  .chip{font-family:var(--mono); font-size:11px; padding:2px 9px; border-radius:6px; cursor:pointer;
+    background:var(--panel-2); color:var(--text); border:1px solid var(--border)}
+  .chip:hover{border-color:var(--fno); color:var(--fno)}
+
+  .empty{text-align:center; padding:60px 20px; color:var(--muted)}
+  .empty .big{font-family:var(--display); font-size:18px; color:var(--text); margin-bottom:8px}
+  .loading{padding:50px; text-align:center; color:var(--faint); font-family:var(--mono); font-size:13px}
+  footer{border-top:1px solid var(--border-soft); padding:22px 0 40px; color:var(--faint);
+    font-size:11.5px}
+  footer a{color:var(--muted)}
+
+  @media (prefers-reduced-motion: reduce){ *{transition:none!important; animation:none!important} }
+</style>
+</head>
+<body>
+<header class="mast">
+  <div class="wrap mast-row">
+    <div class="brand">
+      <div class="mark">THE OVERNIGHT <b>TAPE</b></div>
+      <div class="sub">India macro &amp; F&amp;O — what moved since the last close</div>
+    </div>
+    <div class="clockbox">
+      <div class="clock" id="clock">--:--:--<small>IST</small></div>
+      <div class="mstat">
+        <div id="mktStatus"><span class="dot closed"></span><span class="closed">Market closed</span></div>
+        <div class="count" id="opensIn"></div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+  <section class="band">
+    <div class="band-top">
+      <div class="band-label">Coverage window: <span id="winLabel">loading…</span><span id="seedFlag"></span></div>
+      <div class="updated" id="updated"></div>
+    </div>
+    <div class="timeline">
+      <div class="tl-track">
+        <div class="tl-fill" id="tlFill" style="width:0%"></div>
+        <div class="tl-now" id="tlNow" style="left:0%"></div>
+      </div>
+      <div class="tl-labels">
+        <span><b id="tlClose">prev close</b> · 3:30 PM</span>
+        <span>overnight</span>
+        <span>9:15 AM · <b id="tlOpen">next open</b></span>
+      </div>
+    </div>
+  </section>
+
+  <section class="controls">
+    <div class="seg" id="catSeg">
+      <button data-cat="all"   class="on all">All <span class="n" id="cAll">0</span></button>
+      <button data-cat="macro" class="">Macro <span class="n" id="cMacro">0</span></button>
+      <button data-cat="fno"   class="">F&amp;O <span class="n" id="cFno">0</span></button>
+    </div>
+    <label class="search">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input id="search" type="search" placeholder="Search headlines, tickers, sources…" autocomplete="off" />
+    </label>
+    <label class="winToggle"><input type="checkbox" id="winOnly" checked /> overnight only</label>
+  </section>
+
+  <div class="grid">
+    <aside class="rail">
+      <div class="card">
+        <h3>Most mentioned · F&amp;O</h3>
+        <div class="stocklist" id="stockList"><div style="color:var(--faint);font-size:12px">—</div></div>
+      </div>
+      <div class="card">
+        <h3>Sources</h3>
+        <div class="srcgrid" id="srcGrid"><div style="color:var(--faint);font-size:12px">—</div></div>
+      </div>
+    </aside>
+
+    <main>
+      <div class="feed" id="feed"><div class="loading">Loading the tape…</div></div>
+    </main>
+  </div>
+
+  <footer class="wrap">
+    Headlines aggregated from public RSS feeds of Indian financial outlets, refreshed automatically via GitHub Actions.
+    Times in IST. Each card links to the original article. Tagging is keyword-based and may miss or mis-tag stories.
+    Not investment advice. <span id="genline"></span>
+  </footer>
+</div>
+
+<script>
+const IST_TZ = "Asia/Kolkata";
+let DATA = null;
+let activeCat = "all";
+let activeTicker = null;
+let query = "";
+let winOnly = true;
+
+const $ = s => document.querySelector(s);
+
+/* ---- IST helpers ---- */
+function istParts(d=new Date()){
+  const f = new Intl.DateTimeFormat("en-GB",{timeZone:IST_TZ,hour12:false,
+    weekday:"short",day:"2-digit",month:"short",hour:"2-digit",minute:"2-digit",second:"2-digit"});
+  const p = {};
+  for(const x of f.formatToParts(d)) p[x.type]=x.value;
+  return p;
+}
+function istMinutes(d=new Date()){
+  const p=istParts(d); return (+p.hour)*60 + (+p.minute);
+}
+function istWeekday(d=new Date()){ // 0=Sun..6=Sat
+  const wd=new Intl.DateTimeFormat("en-US",{timeZone:IST_TZ,weekday:"short"}).format(d);
+  return ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"].indexOf(wd);
+}
+
+/* ---- live clock + market status ---- */
+function tickClock(){
+  const p=istParts();
+  $("#clock").innerHTML = `${p.hour}:${p.minute}:${p.second}<small>IST</small>`;
+  const mins=istMinutes(), wd=istWeekday();
+  const weekday = wd>=1 && wd<=5;
+  const open = weekday && mins>=555 && mins<930; // 09:15–15:30
+  const sd=$("#mktStatus");
+  if(open){ sd.innerHTML='<span class="dot open"></span><span class="open">Market open</span>';
+    const left=930-mins; $("#opensIn").textContent=`closes in ${Math.floor(left/60)}h ${left%60}m`;
+  } else {
+    sd.innerHTML='<span class="dot closed"></span><span class="closed">Market closed</span>';
+    $("#opensIn").textContent = `opens in ${untilOpenStr()}`;
+  }
+  paintTimeline();
+}
+function nextOpen(){ // Date of next 09:15 IST weekday
+  let d=new Date();
+  for(let i=0;i<8;i++){
+    const wd=istWeekday(d), mins=istMinutes(d);
+    if(wd>=1 && wd<=5 && (i>0 || mins<555)) {
+      // build that day's 09:15 IST as an instant
+      return istInstant(d,9,15);
+    }
+    d=new Date(d.getTime()+24*3600*1000);
+  }
+  return istInstant(d,9,15);
+}
+function istInstant(refDate,h,m){
+  // returns a Date (UTC instant) for given IST clock time on refDate's IST calendar day
+  const p=istParts(refDate);
+  // reconstruct yyyy from a full format
+  const y=new Intl.DateTimeFormat("en-US",{timeZone:IST_TZ,year:"numeric"}).format(refDate);
+  const moNum={Jan:0,Feb:1,Mar:2,Apr:3,May:4,Jun:5,Jul:6,Aug:7,Sep:8,Oct:9,Nov:10,Dec:11}[p.month];
+  // IST = UTC+5:30 → UTC instant
+  return new Date(Date.UTC(+y,moNum,+p.day,h-5,m-30,0));
+}
+function untilOpenStr(){
+  const ms=nextOpen()-new Date();
+  if(ms<0) return "—";
+  const h=Math.floor(ms/3600000), m=Math.floor(ms%3600000/60000);
+  return h>=24 ? `${Math.floor(h/24)}d ${h%24}h` : `${h}h ${m}m`;
+}
+function paintTimeline(){
+  if(!DATA) return;
+  const close=new Date(DATA.window.since_utc).getTime();
+  const open=nextOpen().getTime();
+  const now=Date.now();
+  const span=open-close;
+  let frac = span>0 ? (now-close)/span : 0;
+  frac=Math.max(0,Math.min(1,frac));
+  $("#tlFill").style.width=(frac*100).toFixed(1)+"%";
+  $("#tlNow").style.left=(frac*100).toFixed(1)+"%";
+}
+
+/* ---- relative time ---- */
+function ago(iso){
+  if(!iso) return "";
+  const m=Math.floor((Date.now()-new Date(iso))/60000);
+  if(m<1) return "just now";
+  if(m<60) return m+"m ago";
+  const h=Math.floor(m/60);
+  if(h<24) return h+"h ago";
+  return Math.floor(h/24)+"d ago";
+}
+function esc(s){return (s||"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
+
+/* ---- render ---- */
+function filtered(){
+  if(!DATA) return [];
+  const q=query.trim().toLowerCase();
+  return DATA.items.filter(it=>{
+    if(winOnly && !it.in_window) return false;
+    if(activeCat!=="all" && !it.categories.includes(activeCat)) return false;
+    if(activeTicker && !it.tickers.some(t=>t.ticker===activeTicker)) return false;
+    if(q){
+      const hay=(it.title+" "+it.summary+" "+it.sources.join(" ")+" "+
+        it.tickers.map(t=>t.ticker+" "+t.name).join(" ")).toLowerCase();
+      if(!hay.includes(q)) return false;
+    }
+    return true;
+  });
+}
+function render(){
+  const items=filtered();
+  const feed=$("#feed");
+  if(!items.length){
+    feed.innerHTML=`<div class="empty"><div class="big">Nothing here yet</div>
+      <div>No stories match this filter${winOnly?` in the overnight window`:``}.
+      ${DATA&&DATA.seed?`This is placeholder data — run the GitHub Action to load live news.`:`Try “All”, clear filters, or untick “overnight only”.`}</div></div>`;
+    return;
+  }
+  feed.innerHTML=items.map(it=>{
+    const cats=it.categories.map(c=>`<span class="tag ${c}">${c==="fno"?"F&amp;O":c}</span>`).join("");
+    const chips=it.tickers.map(t=>`<span class="chip" data-tk="${t.ticker}" title="${esc(t.name)}">${t.ticker}</span>`).join("");
+    const srcs=it.sources.map(s=>`<span>${esc(s)}</span>`).join("");
+    return `<article class="item">
+      <div class="meta">
+        <span class="time">${esc(it.published_ist||"")}</span>
+        <span class="ago">${ago(it.published_utc)}</span>
+        <span class="srcs">${srcs}</span>
+      </div>
+      <h2><a href="${esc(it.link)}" target="_blank" rel="noopener">${esc(it.title)}</a></h2>
+      ${it.summary?`<p>${esc(it.summary)}</p>`:""}
+      <div class="tags">${cats}${chips}</div>
+    </article>`;
+  }).join("");
+  feed.querySelectorAll(".chip").forEach(c=>c.onclick=()=>{
+    activeTicker = activeTicker===c.dataset.tk ? null : c.dataset.tk;
+    syncStockHighlight(); render();
+    window.scrollTo({top:0,behavior:"smooth"});
+  });
+}
+function renderRail(){
+  const sl=$("#stockList");
+  if(DATA.top_stocks.length){
+    sl.innerHTML=DATA.top_stocks.map(s=>`
+      <div class="stockrow ${activeTicker===s.ticker?"active":""}" data-tk="${s.ticker}">
+        <div class="left"><span class="tk">${s.ticker}</span><span class="nm">${esc(s.name)}</span></div>
+        <span class="ct">${s.count}</span>
+      </div>`).join("");
+    sl.querySelectorAll(".stockrow").forEach(r=>r.onclick=()=>{
+      activeTicker = activeTicker===r.dataset.tk ? null : r.dataset.tk;
+      syncStockHighlight(); render();
+    });
+  } else { sl.innerHTML=`<div style="color:var(--faint);font-size:12px">No F&O names in window yet.</div>`; }
+
+  $("#srcGrid").innerHTML=DATA.sources.map(s=>`
+    <div class="srcrow"><span class="sd ${s.ok?"ok":"bad"}"></span>
+      <span>${esc(s.name)}</span><span class="sc">${s.ok?s.count:"—"}</span></div>`).join("");
+}
+function syncStockHighlight(){
+  document.querySelectorAll(".stockrow").forEach(r=>
+    r.classList.toggle("active", r.dataset.tk===activeTicker));
+}
+function renderCounts(){
+  const c=DATA.counts;
+  $("#cAll").textContent=winOnly?c.in_window:c.total_fetched;
+  $("#cMacro").textContent=c.macro;
+  $("#cFno").textContent=c.fno;
+}
+function renderHeader(){
+  $("#winLabel").textContent=DATA.window.label.replace(/^Since previous close — /,"");
+  $("#tlClose").textContent=DATA.window.since_ist.split(" ")[0].slice(5); // MM-DD-ish; small
+  const no=nextOpen();
+  $("#tlOpen").textContent=new Intl.DateTimeFormat("en-GB",{timeZone:IST_TZ,weekday:"short",day:"2-digit",month:"short"}).format(no);
+  $("#updated").textContent="Updated "+(DATA.generated_at_ist||"");
+  $("#genline").textContent=DATA.generated_at_ist?("Last refresh: "+DATA.generated_at_ist+"."):"";
+  $("#seedFlag").innerHTML = DATA.seed ? `<span class="seedflag">sample data</span>` : "";
+}
+
+/* ---- data load ---- */
+async function load(){
+  try{
+    const r=await fetch("./data/news.json?t="+Date.now(),{cache:"no-store"});
+    if(!r.ok) throw new Error(r.status);
+    DATA=await r.json();
+    renderHeader(); renderCounts(); renderRail(); render(); paintTimeline();
+  }catch(e){
+    $("#feed").innerHTML=`<div class="empty"><div class="big">Couldn’t load the feed</div>
+      <div>data/news.json isn’t available yet. If you just deployed, run the
+      “Update news” GitHub Action once, then refresh.</div></div>`;
+  }
+}
+
+/* ---- wire controls ---- */
+$("#catSeg").addEventListener("click",e=>{
+  const b=e.target.closest("button"); if(!b) return;
+  activeCat=b.dataset.cat;
+  [...$("#catSeg").children].forEach(x=>{
+    x.classList.remove("on","all","macro","fno");
+    if(x===b){ x.classList.add("on"); x.classList.add(b.dataset.cat); }
+  });
+  render();
+});
+$("#search").addEventListener("input",e=>{query=e.target.value; render();});
+$("#winOnly").addEventListener("change",e=>{winOnly=e.target.checked; renderCounts(); render();});
+
+tickClock(); setInterval(tickClock,1000);
+load(); setInterval(load,5*60*1000); // refresh data every 5 min
+</script>
+</body>
+</html>
